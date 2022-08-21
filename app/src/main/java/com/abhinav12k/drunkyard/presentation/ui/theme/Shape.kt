@@ -1,4 +1,4 @@
-package com.abhinav12k.drunkyard.presentation.theme
+package com.abhinav12k.drunkyard.presentation.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

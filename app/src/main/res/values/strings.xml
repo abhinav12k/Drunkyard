@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Drunkyard</string>
+    <string name="search_placeholder">Search Drink</string>
 </resources>
