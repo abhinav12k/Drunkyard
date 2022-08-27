@@ -3,6 +3,9 @@ package com.abhinav12k.drunkyard.presentation.drinkList.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -48,6 +51,22 @@ fun DrinkCard(
                 style = MaterialTheme.typography.h2,
                 textAlign = TextAlign.Center,
             )
+        }
+    }
+}
+
+@Composable
+fun DrinkCardsGrid(
+    drinkCards: List<DrinkCard>,
+    modifier: Modifier = Modifier,
+    onClick: (id: String) -> Unit
+) {
+    LazyVerticalGrid(
+        modifier = modifier,
+        columns = GridCells.Fixed(2)
+    ) {
+        items(drinkCards) { drinkCard ->
+            DrinkCard(drinkCard = drinkCard, onClick = onClick)
         }
     }
 }

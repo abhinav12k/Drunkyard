@@ -1,25 +1,21 @@
-package com.abhinav12k.drunkyard.domain.usecase.getRandomDrink
+package com.abhinav12k.drunkyard.domain.usecase.getDrinksByCategory
 
 import com.abhinav12k.drunkyard.common.Resource
-import com.abhinav12k.drunkyard.data.remote.dto.toDrinkDetail
+import com.abhinav12k.drunkyard.data.remote.dto.toDrinkCards
 import com.abhinav12k.drunkyard.domain.repository.DrinkRepository
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class GetRandomDrinkUseCase @Inject constructor(
+class GetDrinkCardsByCategoryUseCase @Inject constructor(
     private val repository: DrinkRepository
 ) {
-    operator fun invoke(id: String) = flow {
+
+    operator fun invoke(category: String) = flow {
         try {
             emit(Resource.Loading())
-            val result = repository.getDrinkById(id).toDrinkDetail()
-            if (result == null) {
-                emit(Resource.Error(message = "An unexpected error occurred!"))
-            } else {
-                emit(Resource.Success(result))
-            }
+            emit(Resource.Success(repository.getDrinksBasedOnCategory(category).toDrinkCards()))
         } catch (e: HttpException) {
             emit(Resource.Error(message = e.localizedMessage ?: "An unexpected error occurred!"))
         } catch (e: IOException) {

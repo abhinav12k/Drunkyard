@@ -3,6 +3,7 @@ package com.abhinav12k.drunkyard.data.remote
 import com.abhinav12k.drunkyard.data.remote.dto.DrinksDto
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 interface CocktailApi {
@@ -19,14 +20,14 @@ interface CocktailApi {
     @GET("api/json/v1/1/list.php?a=list")
     suspend fun getAlcoholicFilters(): DrinksDto
 
-    @GET("api/json/v1/1/filter.php?c={category}")
-    suspend fun getDrinksBasedOnCategory(@Path("category") category: String): DrinksDto
+    @GET("api/json/v1/1/filter.php")
+    suspend fun getDrinksBasedOnCategory(@Query("c") category: String): DrinksDto
 
-    @GET("api/json/v1/1/lookup.php?i={id}")
-    suspend fun getDrinkById(@Path("id") id: String): DrinksDto
+    @GET("api/json/v1/1/lookup.php")
+    suspend fun getDrinkById(@Query("i") id: String): DrinksDto
 
-    @GET("api/json/v1/1/search.php?s={drinkName}")
-    suspend fun getDrinksByName(@Path("drinkName") drinkName: String): DrinksDto
+    @GET("api/json/v1/1/search.php")
+    suspend fun getDrinksByName(@Query("s") drinkName: String): DrinksDto
 
     @GET("api/json/v1/1/random.php")
     suspend fun getRandomDrink(): DrinksDto

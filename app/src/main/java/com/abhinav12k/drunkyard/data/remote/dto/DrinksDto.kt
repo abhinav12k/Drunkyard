@@ -25,6 +25,7 @@ fun DrinksDto.toCategories(): List<Category> {
         }
         category?.let { categories.add(it) }
     }
+    categories[0].isSelected = true
     return categories
 }
 

@@ -10,34 +10,48 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.abhinav12k.drunkyard.presentation.drinkList.DrinkListScreen
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DrunkyardTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
+                drunkyardMainScreen()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun drunkyardMainScreen() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = NavScreen.DrinkListScreen.route) {
+
+        composable(route = NavScreen.DrinkListScreen.route) {
+            DrinkListScreen(viewModel = hiltViewModel())
+        }
+
+        composable(route = NavScreen.DrinkDetailScreen.route) {
+
+        }
+
+    }
+
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    DrunkyardTheme {
-        Greeting("Android")
+sealed class NavScreen(val route: String) {
+    object DrinkListScreen : NavScreen("DrinkListScreen")
+    object DrinkDetailScreen : NavScreen("DrinkDetailScreen") {
+        const val routeWithArgument: String = "DrinkDetailScreen/{drinkId}"
+        const val argument0: String = "drinkId"
     }
 }

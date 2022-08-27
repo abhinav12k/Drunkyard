@@ -1,10 +1,12 @@
 package com.abhinav12k.drunkyard.presentation.drinkList.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,23 +23,35 @@ import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 
 @Composable
 fun Chip(
-    text: String,
+    category: Category,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
+    val modifier = if (category.isSelected) {
+        Modifier
             .background(
                 color = MaterialTheme.colors.primary,
                 shape = RoundedCornerShape(100.dp)
             )
             .padding(8.dp)
+    } else {
+        Modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.primary,
+                shape = RoundedCornerShape(100.dp)
+            )
+            .padding(8.dp)
+    }
+    val textColor = if (category.isSelected) Color.White else Color.Black
+    Box(
+        modifier = modifier
             .clickable {
                 onClick()
             }
     ) {
         Text(
-            text = text,
-            color = Color.White,
+            text = category.categoryName,
+            color = textColor,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.caption
         )
@@ -48,15 +62,15 @@ fun Chip(
 fun HorizontalChipList(
     categories: List<Category>,
     modifier: Modifier = Modifier,
-    onChipClicked: (queryParam: String) -> Unit
+    onChipClicked: (category: Category) -> Unit
 ) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(categories) { category ->
-            Chip(text = category.categoryName) {
-                onChipClicked(category.queryParam)
+            Chip(category = category) {
+                onChipClicked(category)
             }
         }
     }
@@ -71,16 +85,16 @@ fun PreviewChip() {
 }
 
 val categories = listOf(
-    Category("Ordinary Drink", "Ordinary_drink"),
-    Category("Cocktail", "cocktail"),
-    Category("Shake", "Shake"),
-    Category("Ordinary Drink", "Ordinary_drink"),
-    Category("Cocktail", "cocktail"),
-    Category("Shake", "Shake"),
-    Category("Ordinary Drink", "Ordinary_drink"),
-    Category("Cocktail", "cocktail"),
-    Category("Shake", "Shake"),
-    Category("Ordinary Drink", "Ordinary_drink"),
-    Category("Cocktail", "cocktail"),
-    Category("Shake", "Shake")
+    Category("Ordinary Drink", "Ordinary_drink", false),
+    Category("Cocktail", "cocktail", true),
+    Category("Shake", "Shake", false),
+    Category("Ordinary Drink", "Ordinary_drink", false),
+    Category("Cocktail", "cocktail", false),
+    Category("Shake", "Shake", false),
+    Category("Ordinary Drink", "Ordinary_drink", false),
+    Category("Cocktail", "cocktail", false),
+    Category("Shake", "Shake", false),
+    Category("Ordinary Drink", "Ordinary_drink", false),
+    Category("Cocktail", "cocktail", false),
+    Category("Shake", "Shake", false)
 )
