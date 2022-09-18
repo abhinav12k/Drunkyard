@@ -39,7 +39,11 @@ fun DrinkListScreen(
             drinkCards = viewModel.drinkCards.value,
             searchText = text,
             onSearchTextChanged = {
-                viewModel.getDrinksBasedOnName(it)
+                if (it.isNotEmpty()) {
+                    viewModel.getDrinksBasedOnName(it)
+                } else {
+                    viewModel.getDrinkCardsByCategory(DrinkListViewModel.DEFAULT_CATEGORY)
+                }
                 changeText(it)
             },
             onChipClicked = {
@@ -88,7 +92,7 @@ fun DrinkListScreenContent(
             SearchBar(
                 placeHolder = R.string.search_placeholder,
                 value = searchText,
-                modifier = modifier.padding(horizontal = 16.dp),
+                modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
                 onValueChange = {
                     onSearchTextChanged(it)
                 }
