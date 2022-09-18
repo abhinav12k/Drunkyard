@@ -32,7 +32,7 @@ fun DrinkCard(
         onClick = {
             onClick(drinkCard.id)
         },
-        elevation = 8.dp,
+        elevation = 4.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(

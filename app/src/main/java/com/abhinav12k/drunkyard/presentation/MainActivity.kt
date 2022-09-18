@@ -11,9 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.abhinav12k.drunkyard.presentation.drinkDetail.DrinkDetailScreen
 import com.abhinav12k.drunkyard.presentation.drinkList.DrinkListScreen
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,24 +27,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrunkyardTheme {
-                drunkyardMainScreen()
+                DrunkyardMainScreen()
             }
         }
     }
 }
 
 @Composable
-fun drunkyardMainScreen() {
+fun DrunkyardMainScreen() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = NavScreen.DrinkListScreen.route) {
 
         composable(route = NavScreen.DrinkListScreen.route) {
-            DrinkListScreen(viewModel = hiltViewModel())
+            DrinkListScreen(viewModel = hiltViewModel()) { drinkId ->
+                navController.navigate("${NavScreen.DrinkDetailScreen.route}/$drinkId")
+            }
         }
 
-        composable(route = NavScreen.DrinkDetailScreen.route) {
-
+        composable(
+            route = NavScreen.DrinkDetailScreen.routeWithArgument,
+            arguments = listOf(
+                navArgument(NavScreen.DrinkDetailScreen.argument0) { type = NavType.StringType }
+            )
+        ) { navBackStackEntry ->
+            val drinkId =
+                navBackStackEntry.arguments?.getString(NavScreen.DrinkDetailScreen.argument0)
+                    ?: return@composable
+            DrinkDetailScreen(viewModel = hiltViewModel(), drinkId = drinkId)
         }
 
     }

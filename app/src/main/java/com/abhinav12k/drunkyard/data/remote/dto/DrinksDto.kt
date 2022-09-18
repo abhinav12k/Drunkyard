@@ -9,14 +9,14 @@ import com.google.gson.annotations.SerializedName
 
 data class DrinksDto(
     @SerializedName("drinks")
-    val drinks: List<Drink>
+    val drinks: List<Drink>? = null
 ) {
-    fun getDrinkDetail(): Drink = drinks[0]
+    fun getDrinkDetail(): Drink? = drinks?.get(0)
 }
 
 fun DrinksDto.toCategories(): List<Category> {
     val categories = mutableListOf<Category>()
-    drinks.forEach { drink ->
+    drinks?.forEach { drink ->
         val category = try {
             Category(drink.categoryName!!, drink.getDrinkNameForQueryParam()!!)
         } catch (e: Exception) {
@@ -31,7 +31,7 @@ fun DrinksDto.toCategories(): List<Category> {
 
 fun DrinksDto.toDrinkCards(): List<DrinkCard> {
     val drinkCards = mutableListOf<DrinkCard>()
-    drinks.forEach { drink ->
+    drinks?.forEach { drink ->
         val drinkCard = try {
             DrinkCard(
                 drink.drinkId!!,
@@ -53,7 +53,7 @@ fun DrinksDto.toDrinkDetail(): DrinkDetail? {
     return try {
         val drink = getDrinkDetail()
         DrinkDetail(
-            id = drink.drinkId!!,
+            id = drink?.drinkId!!,
             drinkName = drink.drinkName!!,
             thumbnail = drink.getDrinkThumbnail()!!,
             image = drink.getDrinkImage()!!,

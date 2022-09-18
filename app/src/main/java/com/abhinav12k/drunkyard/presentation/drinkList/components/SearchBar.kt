@@ -19,6 +19,7 @@ import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 fun SearchBar(
     @StringRes placeHolder: Int,
     modifier: Modifier = Modifier,
+    value: String,
     onValueChange: (String) -> Unit
 ) {
     TextField(
@@ -31,7 +32,7 @@ fun SearchBar(
         placeholder = {
             Text(stringResource(id = placeHolder))
         },
-        value = "",
+        value = value,
         onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth()
@@ -43,6 +44,6 @@ fun SearchBar(
 @Composable
 fun PreviewSearchBar() {
     DrunkyardTheme {
-        SearchBar(placeHolder = R.string.search_placeholder, modifier = Modifier.padding(8.dp)) {}
+        SearchBar(placeHolder = R.string.search_placeholder, modifier = Modifier.padding(8.dp),value = "") {}
     }
 }

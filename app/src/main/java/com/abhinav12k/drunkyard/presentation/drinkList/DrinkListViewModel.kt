@@ -1,6 +1,7 @@
 package com.abhinav12k.drunkyard.presentation.drinkList
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,13 +25,13 @@ class DrinkListViewModel @Inject constructor(
     private val _drinkListViewState: MutableState<DrinkListViewState> = mutableStateOf(
         DrinkListViewState()
     )
-    val drinkListViewState get() = _drinkListViewState
+    val drinkListViewState: State<DrinkListViewState> get() = _drinkListViewState
 
     private val _drinkCards: MutableState<List<DrinkCard>?> = mutableStateOf(listOf())
-    val drinkCards get() = _drinkCards
+    val drinkCards: State<List<DrinkCard>?> get() = _drinkCards
 
     private val _drinkCardCategories: MutableState<List<Category>?> = mutableStateOf(listOf())
-    val drinkCardCategories get() = _drinkCardCategories
+    val drinkCardCategories: State<List<Category>?> get() = _drinkCardCategories
 
     init {
         getDrinkCategories()
@@ -105,10 +106,6 @@ class DrinkListViewModel @Inject constructor(
             }
         }
         _drinkCardCategories.value = updatedCategories
-    }
-
-    fun getDrinkDetailsById(drinkId: String) {
-        //todo: implement this function
     }
 
     companion object {

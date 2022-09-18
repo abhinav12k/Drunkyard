@@ -8,6 +8,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -21,33 +24,40 @@ import com.abhinav12k.drunkyard.presentation.drinkList.components.SearchBar
 
 @Composable
 fun DrinkListScreen(
-    viewModel: DrinkListViewModel
+    viewModel: DrinkListViewModel,
+    onDrinkCardClicked: (drinkId: String) -> Unit
 ) {
-    val viewState = viewModel.drinkListViewState.value
-
+    val viewState = remember {
+        viewModel.drinkListViewState
+    }
+    val (text, changeText) = rememberSaveable {
+        mutableStateOf("")
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         DrinkListScreenContent(
             categories = viewModel.drinkCardCategories.value,
             drinkCards = viewModel.drinkCards.value,
+            searchText = text,
             onSearchTextChanged = {
                 viewModel.getDrinksBasedOnName(it)
+                changeText(it)
             },
             onChipClicked = {
                 viewModel.updateChipSelection(it)
                 viewModel.getDrinkCardsByCategory(it.queryParam)
             },
             onDrinkCardClicked = {
-                viewModel.getDrinkDetailsById(it)
+                onDrinkCardClicked(it)
             }
         )
-        if (viewState.isLoading) {
+        if (viewState.value.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        if (!viewState.error.isNullOrBlank()) {
+        if (!viewState.value.error.isNullOrBlank()) {
             Text(
-                text = viewState.error,
+                text = viewState.value.error!!,
                 color = MaterialTheme.colors.error,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -65,6 +75,7 @@ fun DrinkListScreenContent(
     modifier: Modifier = Modifier,
     categories: List<Category>?,
     drinkCards: List<DrinkCard>?,
+    searchText: String,
     onSearchTextChanged: (drinkName: String) -> Unit,
     onChipClicked: (category: Category) -> Unit,
     onDrinkCardClicked: (drinkId: String) -> Unit
@@ -75,6 +86,7 @@ fun DrinkListScreenContent(
     ) {
         SearchBar(
             placeHolder = R.string.search_placeholder,
+            value = searchText,
             modifier = modifier.padding(horizontal = 16.dp),
             onValueChange = {
                 onSearchTextChanged(it)
