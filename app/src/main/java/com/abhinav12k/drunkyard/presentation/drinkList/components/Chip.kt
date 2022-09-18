@@ -29,7 +29,7 @@ fun Chip(
     val modifier = if (category.isSelected) {
         Modifier
             .background(
-                color = MaterialTheme.colors.primary,
+                color = Color.Black,
                 shape = RoundedCornerShape(100.dp)
             )
             .padding(8.dp)
@@ -37,7 +37,7 @@ fun Chip(
         Modifier
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colors.primary,
+                color = Color.Black,
                 shape = RoundedCornerShape(100.dp)
             )
             .padding(8.dp)
