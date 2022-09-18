@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.R
+import com.abhinav12k.drunkyard.common.CustomVertical2DRow
 import com.abhinav12k.drunkyard.common.NetworkImage
 import com.abhinav12k.drunkyard.domain.model.DrinkDetail
 import com.abhinav12k.drunkyard.domain.model.Ingredient
@@ -182,30 +183,13 @@ fun DrinkIngredientsSection(
                 .fillMaxWidth()
         )
 
-        var index = 0
-        while (index < ingredients.size - 1) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = modifier.fillMaxWidth()
-            ) {
-                IngredientCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    ingredientNumber = index + 1,
-                    ingredient = ingredients[index]
-                )
-                IngredientCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    ingredientNumber = index + 2,
-                    ingredient = ingredients[index + 1]
-                )
-            }
-            index += 2
+        CustomVertical2DRow(items = ingredients) { default_modifier, idx ->
+            IngredientCard(
+                default_modifier,
+                ingredientNumber = idx + 1,
+                ingredient = ingredients[idx]
+            )
         }
-
     }
 }
 

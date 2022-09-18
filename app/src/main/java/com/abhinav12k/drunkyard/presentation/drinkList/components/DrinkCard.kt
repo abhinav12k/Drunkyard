@@ -2,6 +2,7 @@ package com.abhinav12k.drunkyard.presentation.drinkList.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.abhinav12k.drunkyard.common.CustomVertical2DRow
 import com.abhinav12k.drunkyard.common.NetworkImage
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
@@ -40,7 +42,7 @@ fun DrinkCard(
         ) {
             NetworkImage(
                 modifier = Modifier
-                    .aspectRatio(0.8f),
+                    .aspectRatio(1f),
                 url = drinkCard.thumbnail
             )
             Text(
@@ -60,13 +62,15 @@ fun DrinkCardsGrid(
     modifier: Modifier = Modifier,
     onClick: (id: String) -> Unit
 ) {
-    LazyVerticalGrid(
+    CustomVertical2DRow(
         modifier = modifier,
-        columns = GridCells.Fixed(2)
-    ) {
-        items(drinkCards) { drinkCard ->
-            DrinkCard(drinkCard = drinkCard, onClick = onClick)
-        }
+        items = drinkCards
+    ) { default_modifier, idx ->
+        DrinkCard(
+            modifier = default_modifier,
+            drinkCard = drinkCards[idx],
+            onClick = onClick
+        )
     }
 }
 

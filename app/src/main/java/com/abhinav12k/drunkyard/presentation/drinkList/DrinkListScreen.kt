@@ -1,9 +1,9 @@
 package com.abhinav12k.drunkyard.presentation.drinkList
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -80,34 +80,43 @@ fun DrinkListScreenContent(
     onChipClicked: (category: Category) -> Unit,
     onDrinkCardClicked: (drinkId: String) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
     ) {
-        SearchBar(
-            placeHolder = R.string.search_placeholder,
-            value = searchText,
-            modifier = modifier.padding(horizontal = 16.dp),
-            onValueChange = {
-                onSearchTextChanged(it)
-            }
-        )
+        item {
+            SearchBar(
+                placeHolder = R.string.search_placeholder,
+                value = searchText,
+                modifier = modifier.padding(horizontal = 16.dp),
+                onValueChange = {
+                    onSearchTextChanged(it)
+                }
+            )
+        }
 
-        if (categories != null)
-            HorizontalChipList(
-                categories = categories,
-                modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                onChipClicked = {
-                    onChipClicked(it)
-                }
-            )
-        if (drinkCards != null)
-            DrinkCardsGrid(
-                drinkCards = drinkCards,
-                modifier = modifier.padding(horizontal = 8.dp),
-                onClick = {
-                    onDrinkCardClicked(it)
-                }
-            )
+        if (categories != null) {
+            item {
+                HorizontalChipList(
+                    categories = categories,
+                    modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    onChipClicked = {
+                        onChipClicked(it)
+                    }
+                )
+            }
+        }
+
+        if (drinkCards != null) {
+            item(drinkCards) {
+                DrinkCardsGrid(
+                    drinkCards = drinkCards,
+                    modifier = modifier.padding(horizontal = 8.dp),
+                    onClick = {
+                        onDrinkCardClicked(it)
+                    }
+                )
+            }
+        }
     }
 }
