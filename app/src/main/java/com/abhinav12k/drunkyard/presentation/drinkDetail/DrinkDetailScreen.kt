@@ -3,10 +3,9 @@ package com.abhinav12k.drunkyard.presentation.drinkDetail
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -71,34 +70,42 @@ fun DrinkDetailScreenContent(
     drinkDetail: DrinkDetail,
     modifier: Modifier
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
     ) {
-        DrinkHeroCard(
-            imageUrl = drinkDetail.image,
-            drinkName = drinkDetail.drinkName
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .padding(vertical = 12.dp)
-                .fillMaxWidth()
-        ) {
-            DrinkInfoCard(
-                icon = if (drinkDetail.alcoholic.lowercase() == "alcoholic") R.drawable.wine_bottle else R.drawable.no_drinking,
-                info = drinkDetail.alcoholic,
-                backgroundColor = Color.White
-            )
-            DrinkInfoCard(
-                icon = R.drawable.wine_glass,
-                info = drinkDetail.glass,
-                backgroundColor = Color.White
+        item {
+            DrinkHeroCard(
+                imageUrl = drinkDetail.image,
+                drinkName = drinkDetail.drinkName
             )
         }
-        DrinkIngredientsSection(modifier, drinkDetail.ingredients)
-        DrinkInstructions(modifier = modifier, instructions = drinkDetail.instructions)
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth()
+            ) {
+                DrinkInfoCard(
+                    icon = if (drinkDetail.alcoholic.lowercase() == "alcoholic") R.drawable.wine_bottle else R.drawable.no_drinking,
+                    info = drinkDetail.alcoholic,
+                    backgroundColor = Color.White
+                )
+                DrinkInfoCard(
+                    icon = R.drawable.wine_glass,
+                    info = drinkDetail.glass,
+                    backgroundColor = Color.White
+                )
+            }
+        }
+        item {
+            DrinkIngredientsSection(modifier, drinkDetail.ingredients)
+        }
+        item {
+            DrinkInstructions(modifier = modifier, instructions = drinkDetail.instructions)
+        }
     }
 }
 
@@ -141,7 +148,7 @@ fun DrinkInfoCard(
         color = backgroundColor,
     ) {
         Row(
-            modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Image(
                 painter = painterResource(id = icon),
@@ -153,7 +160,6 @@ fun DrinkInfoCard(
                 style = MaterialTheme.typography.caption,
                 color = Color.Black,
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
                     .align(Alignment.CenterVertically)
             )
         }
@@ -165,21 +171,41 @@ fun DrinkIngredientsSection(
     modifier: Modifier = Modifier,
     ingredients: List<Ingredient>
 ) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Text(
             text = "Ingredients",
             style = MaterialTheme.typography.subtitle1,
             modifier = modifier
                 .padding(top = 12.dp, bottom = 4.dp)
+                .fillMaxWidth()
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = modifier
-        ) {
-            itemsIndexed(ingredients) { idx, item ->
-                IngredientCard(ingredientNumber = idx + 1, ingredient = item)
+
+        var index = 0
+        while (index < ingredients.size - 1) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                IngredientCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    ingredientNumber = index + 1,
+                    ingredient = ingredients[index]
+                )
+                IngredientCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    ingredientNumber = index + 2,
+                    ingredient = ingredients[index + 1]
+                )
             }
+            index += 2
         }
+
     }
 }
 
@@ -212,7 +238,7 @@ fun IngredientCard(
                 )
             }
         }
-        Spacer(modifier = modifier.padding(4.dp))
+        Spacer(modifier = Modifier.padding(4.dp))
         Column {
             Text(
                 text = ingredient.name,
