@@ -7,6 +7,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+//Todo: edit theme of the application -- make it look awesome!
 private val DarkColorPalette = darkColors(
     background = background,
     onBackground = background800,

@@ -1,9 +1,11 @@
 package com.abhinav12k.drunkyard.presentation.drinkList
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,8 +21,10 @@ import com.abhinav12k.drunkyard.R
 import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkCardsGrid
+import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkSection
 import com.abhinav12k.drunkyard.presentation.drinkList.components.HorizontalChipList
 import com.abhinav12k.drunkyard.presentation.drinkList.components.SearchBar
+import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 
 @Composable
 fun DrinkListScreen(
@@ -35,8 +39,9 @@ fun DrinkListScreen(
     }
     Box(modifier = Modifier.fillMaxSize()) {
         DrinkListScreenContent(
-            categories = viewModel.drinkCardCategories.value,
-            drinkCards = viewModel.drinkCards.value,
+            categories = null,
+            drinkCards = null,
+            drinkSections = viewModel.drinkSections.value,
             searchText = text,
             onSearchTextChanged = {
                 if (it.isNotEmpty()) {
@@ -79,20 +84,21 @@ fun DrinkListScreenContent(
     modifier: Modifier = Modifier,
     categories: List<Category>?,
     drinkCards: List<DrinkCard>?,
+    drinkSections: List<DrinkSection>?,
     searchText: String,
     onSearchTextChanged: (drinkName: String) -> Unit,
     onChipClicked: (category: Category) -> Unit,
     onDrinkCardClicked: (drinkId: String) -> Unit
 ) {
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         item {
             SearchBar(
                 placeHolder = R.string.search_placeholder,
                 value = searchText,
-                modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
                 onValueChange = {
                     onSearchTextChanged(it)
                 }
@@ -103,7 +109,7 @@ fun DrinkListScreenContent(
             item {
                 HorizontalChipList(
                     categories = categories,
-                    modifier = modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    modifier = modifier,
                     onChipClicked = {
                         onChipClicked(it)
                     }
@@ -115,8 +121,20 @@ fun DrinkListScreenContent(
             item(drinkCards) {
                 DrinkCardsGrid(
                     drinkCards = drinkCards,
-                    modifier = modifier.padding(horizontal = 8.dp),
+                    modifier = modifier,
                     onClick = {
+                        onDrinkCardClicked(it)
+                    }
+                )
+            }
+        }
+
+        if (drinkSections != null) {
+            items(drinkSections) { drinkSection ->
+                DrinkSection(
+                    modifier = modifier,
+                    drinkSection = drinkSection,
+                    onDrinkCardClicked = {
                         onDrinkCardClicked(it)
                     }
                 )

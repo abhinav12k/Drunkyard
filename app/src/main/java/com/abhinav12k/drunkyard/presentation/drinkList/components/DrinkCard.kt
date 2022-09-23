@@ -1,19 +1,19 @@
 package com.abhinav12k.drunkyard.presentation.drinkList.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.common.CustomVertical2DRow
@@ -21,38 +21,43 @@ import com.abhinav12k.drunkyard.common.NetworkImage
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DrinkCard(
     drinkCard: DrinkCard,
     modifier: Modifier = Modifier,
     onClick: (id: String) -> Unit = {}
 ) {
-    Surface(
-        modifier = modifier.padding(4.dp),
-        onClick = {
-            onClick(drinkCard.id)
-        },
-        elevation = 4.dp,
-        shape = RoundedCornerShape(8.dp)
+    Column(
+        modifier = modifier
+            .padding(4.dp)
+            .width(100.dp)
+            .requiredHeight(140.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            NetworkImage(
-                modifier = Modifier
-                    .aspectRatio(1f),
-                url = drinkCard.thumbnail
-            )
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = drinkCard.drinkName,
-                style = MaterialTheme.typography.caption,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-            )
-        }
+        NetworkImage(
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .shadow(8.dp)
+                .clickable {
+                    onClick(drinkCard.id)
+                },
+            url = drinkCard.thumbnail
+        )
+        Text(
+            modifier = Modifier
+                .paddingFromBaseline(top = 24.dp, bottom = 8.dp)
+                .clickable {
+                    onClick(drinkCard.id)
+                },
+            text = drinkCard.drinkName,
+            style = MaterialTheme.typography.caption,
+            color = Color.DarkGray,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

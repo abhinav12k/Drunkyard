@@ -11,8 +11,11 @@ import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.domain.usecase.getCategories.GetDrinkCategoriesUseCase
 import com.abhinav12k.drunkyard.domain.usecase.getDrinkByName.GetDrinksByNameUseCase
 import com.abhinav12k.drunkyard.domain.usecase.getDrinksByCategory.GetDrinkCardsByCategoryUseCase
+import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,9 +36,15 @@ class DrinkListViewModel @Inject constructor(
     private val _drinkCardCategories: MutableState<List<Category>?> = mutableStateOf(listOf())
     val drinkCardCategories: State<List<Category>?> get() = _drinkCardCategories
 
+    private val _drinkSections: MutableState<List<DrinkSection>?> = mutableStateOf(listOf())
+    val drinkSections: State<List<DrinkSection>?> get() = _drinkSections
+
     init {
-        getDrinkCategories()
-        getDrinkCardsByCategory(null)
+//        getDrinkCategories()
+//        getDrinkCardsByCategory(null)
+        viewModelScope.launch {
+            getDrinkCategoriesSuspend()
+        }
     }
 
     private fun getDrinkCategories() {
@@ -56,6 +65,48 @@ class DrinkListViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun getDrinkCategoriesSuspend() {
+        getDrinkCategoriesUseCase.invoke().collect() { result ->
+            when(result) {
+                is Resource.Success -> getDrinksByCategories(result.data)
+                is Resource.Error -> _drinkListViewState.value = DrinkListViewState(error = result.message)
+                is Resource.Loading -> _drinkListViewState.value = DrinkListViewState(isLoading = true)
+            }
+        }
+    }
+
+    private suspend fun getDrinksByCategories(categories: List<Category>?) {
+        if (categories == null) return
+        val drinkSections = mutableListOf<DrinkSection>()
+        categories.forEach { category ->
+            val cards = getDrinkCardsByCategorySuspend(category.queryParam)
+            if (!cards.isNullOrEmpty()) {
+                drinkSections.add(
+                    DrinkSection(
+                        category,
+                        cards
+                    )
+                )
+            }
+        }
+        _drinkSections.value = drinkSections
+        _drinkListViewState.value = DrinkListViewState(isLoading = false)
+    }
+
+    private suspend fun getDrinkCardsByCategorySuspend(category: String): List<DrinkCard>? =
+        withContext(viewModelScope.coroutineContext) {
+            var drinkCards: List<DrinkCard>? = null
+            getDrinkCardsByCategoryUseCase.invoke(category).collect() { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        drinkCards = result.data
+                    }
+                    else -> {}
+                }
+            }
+            drinkCards
+        }
 
     fun getDrinkCardsByCategory(category: String?) {
         viewModelScope.launch {
