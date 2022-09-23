@@ -40,14 +40,16 @@ fun DrinkListScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         DrinkListScreenContent(
             categories = null,
-            drinkCards = null,
+            drinkCards = viewModel.searchDrinkCards.value,
             drinkSections = viewModel.drinkSections.value,
             searchText = text,
             onSearchTextChanged = {
                 if (it.isNotEmpty()) {
                     viewModel.getDrinksBasedOnName(it)
+                    viewModel.removeDrinkSections()
                 } else {
-                    viewModel.getDrinkCardsByCategory(DrinkListViewModel.DEFAULT_CATEGORY)
+                    viewModel.addDrinkSections()
+                    viewModel.removeSearchSection()
                 }
                 changeText(it)
             },
