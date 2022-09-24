@@ -1,25 +1,19 @@
 package com.abhinav12k.drunkyard.presentation.drinkDetail
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -38,30 +32,37 @@ fun DrinkDetailScreen(
     LaunchedEffect(key1 = drinkId) {
         viewModel.getDrinkDetailsById(drinkId)
     }
-    val viewState = viewModel.drinkDetailViewState.value
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (viewState.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        if (!viewState.error.isNullOrBlank()) {
-            Text(
-                text = viewState.error,
-                color = MaterialTheme.colors.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp)
-                    .align(Alignment.Center)
-            )
-        }
-        if (viewState.drinkDetail != null) {
-            DrinkDetailScreenContent(
-                viewState.drinkDetail,
-                Modifier.padding(8.dp)
-            )
+    val viewState = remember {
+        viewModel.drinkDetailViewState
+    }
+    Scaffold { paddingValues ->
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            if (viewState.value.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            viewState.value.error?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colors.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .align(Alignment.Center)
+                )
+            }
+            viewState.value.drinkDetail?.let {
+                DrinkDetailScreenContent(
+                    it,
+                    Modifier.padding(vertical = 8.dp)
+                )
+            }
         }
     }
 }
@@ -73,12 +74,28 @@ fun DrinkDetailScreenContent(
 ) {
     LazyColumn(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 8.dp)
     ) {
         item {
-            DrinkHeroCard(
-                imageUrl = drinkDetail.image,
-                drinkName = drinkDetail.drinkName
+            NetworkImage(
+                url = drinkDetail.image,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .shadow(8.dp)
+            )
+        }
+        item {
+            Text(
+                text = drinkDetail.drinkName,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.h6,
+                fontWeight = Bold,
             )
         }
         item {
@@ -91,13 +108,11 @@ fun DrinkDetailScreenContent(
             ) {
                 DrinkInfoCard(
                     icon = if (drinkDetail.alcoholic.lowercase() == "alcoholic") R.drawable.wine_bottle else R.drawable.no_drinking,
-                    info = drinkDetail.alcoholic,
-                    backgroundColor = Color.White
+                    info = drinkDetail.alcoholic
                 )
                 DrinkInfoCard(
                     icon = R.drawable.wine_glass,
-                    info = drinkDetail.glass,
-                    backgroundColor = Color.White
+                    info = drinkDetail.glass
                 )
             }
         }
@@ -111,56 +126,31 @@ fun DrinkDetailScreenContent(
 }
 
 @Composable
-fun DrinkHeroCard(imageUrl: String, drinkName: String) {
-    Column {
-        NetworkImage(
-            url = imageUrl,
-            modifier = Modifier
-                .padding(16.dp)
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .border(4.dp, Color.White, CircleShape)
-                .shadow(8.dp)
-        )
-        Text(
-            text = drinkName,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 4.dp),
-            style = MaterialTheme.typography.h6,
-            fontWeight = Bold,
-        )
-    }
-}
-
-@Composable
 fun DrinkInfoCard(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
-    info: String,
-    backgroundColor: Color = Color.White
+    info: String
 ) {
-    Surface(
+    Card(
         modifier = modifier
             .padding(horizontal = 8.dp, vertical = 4.dp),
-        elevation = 8.dp,
-        shape = RoundedCornerShape(12.dp),
-        color = backgroundColor,
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
         ) {
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = info,
-                modifier = modifier.size(24.dp)
+                modifier = modifier.size(24.dp),
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
             )
             Text(
                 text = info,
                 style = MaterialTheme.typography.caption,
-                color = Color.Black,
+                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
+                    .padding(start = 4.dp)
                     .align(Alignment.CenterVertically)
             )
         }
@@ -173,7 +163,9 @@ fun DrinkIngredientsSection(
     ingredients: List<Ingredient>
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth()
     ) {
         Text(
             text = "Ingredients",
@@ -203,11 +195,9 @@ fun IngredientCard(
         modifier = modifier
             .padding(vertical = 8.dp, horizontal = 4.dp)
     ) {
-        Surface(
+        Card(
             elevation = 4.dp,
-            shape = CircleShape,
-            border = BorderStroke(4.dp, Color.White),
-            color = Color.White
+            shape = CircleShape
         ) {
             Box(
                 modifier = Modifier
@@ -216,7 +206,7 @@ fun IngredientCard(
                 Text(
                     text = "$ingredientNumber",
                     style = MaterialTheme.typography.overline,
-                    color = Color.Black,
+                    color = MaterialTheme.colors.onSurface,
                     modifier = Modifier
                         .align(Alignment.Center)
                 )
@@ -227,12 +217,12 @@ fun IngredientCard(
             Text(
                 text = ingredient.name,
                 style = MaterialTheme.typography.caption,
-                color = Color.Black
+                color = MaterialTheme.colors.onSurface
             )
             Text(
                 text = ingredient.amount,
                 style = MaterialTheme.typography.overline,
-                color = Color.Black
+                color = MaterialTheme.colors.onSurface.copy(alpha = .5f)
             )
         }
     }
@@ -243,17 +233,15 @@ fun DrinkInstructions(
     modifier: Modifier = Modifier,
     instructions: String
 ) {
-    Surface(
+    Card(
         elevation = 1.dp,
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(4.dp, Color.White),
-        color = Color.White,
-        modifier = modifier
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
             text = "Instructions - $instructions",
             style = MaterialTheme.typography.caption,
-            color = Color.Black,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.9f),
             modifier = modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         )
