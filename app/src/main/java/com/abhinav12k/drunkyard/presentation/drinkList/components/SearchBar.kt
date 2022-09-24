@@ -1,10 +1,10 @@
 package com.abhinav12k.drunkyard.presentation.drinkList.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.R
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
+import com.abhinav12k.drunkyard.presentation.ui.theme.SearchBarDarkBackground
 
 @Composable
 fun SearchBar(
@@ -24,34 +25,30 @@ fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit
 ) {
-    Surface(
-        elevation = 4.dp,
-        shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+    TextField(
+        leadingIcon = {
+            Icon(imageVector = Icons.Default.Search, contentDescription = null)
+        },
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = MaterialTheme.colors.onSurface,
+            backgroundColor = if (isSystemInDarkTheme()) SearchBarDarkBackground else MaterialTheme.colors.surface,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+        placeholder = {
+            Text(
+                stringResource(id = placeHolder),
+                color = MaterialTheme.colors.onSurface.copy(alpha = .5f)
+            )
+        },
+        shape = CircleShape,
+        value = value,
+        singleLine = true,
+        onValueChange = onValueChange,
         modifier = modifier
-    ) {
-        TextField(
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.Gray,
-                disabledTextColor = Color.Transparent,
-                backgroundColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            placeholder = {
-                Text(stringResource(id = placeHolder))
-            },
-            shape = CircleShape,
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
+            .fillMaxWidth()
+    )
 }
 
 @Preview

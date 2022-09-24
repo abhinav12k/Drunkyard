@@ -3,62 +3,71 @@ package com.abhinav12k.drunkyard.presentation.ui.theme
 import androidx.compose.material.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.abhinav12k.drunkyard.R
 
-// set of dark material typography styles to start with.
-val DarkTypography = Typography(
-    h1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        color = Color.White,
-        fontSize = 28.sp
-    ),
-    h2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        color = Color.White,
-        fontSize = 21.sp
-    ),
-    body1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        color = Color.White,
-        fontSize = 14.sp
-    ),
-    body2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        color = white87,
-        fontSize = 14.sp
-    )
+private val Montserrat = FontFamily(
+    Font(R.font.montserrat_regular),
+    Font(R.font.montserrat_medium, FontWeight.W500),
+    Font(R.font.montserrat_semibold, FontWeight.W600)
 )
 
-// set of light material typography styles to start with.
-val LightTypography = Typography(
-    h1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        color = background900,
-        fontSize = 28.sp
+private val Domine = FontFamily(
+    Font(R.font.domine_regular),
+    Font(R.font.domine_bold, FontWeight.Bold)
+)
+
+val DrunkyardTypography = Typography(
+    h4 = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W600,
+        fontSize = 30.sp
     ),
-    h2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        color = background900,
-        fontSize = 21.sp
+    h5 = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W600,
+        fontSize = 24.sp
+    ),
+    h6 = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W600,
+        fontSize = 20.sp
+    ),
+    subtitle1 = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W600,
+        fontSize = 16.sp
+    ),
+    subtitle2 = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W500,
+        fontSize = 14.sp
     ),
     body1 = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Domine,
         fontWeight = FontWeight.Normal,
-        color = background800,
-        fontSize = 14.sp
+        fontSize = 16.sp
     ),
     body2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        color = background800,
+        fontFamily = Montserrat,
         fontSize = 14.sp
+    ),
+    button = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W500,
+        fontSize = 14.sp
+    ),
+    caption = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    overline = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.W500,
+        fontSize = 12.sp
     )
 )

@@ -1,7 +1,9 @@
 package com.abhinav12k.drunkyard.presentation.drinkList.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -31,7 +33,12 @@ fun DrinkCard(
         modifier = modifier
             .padding(4.dp)
             .width(100.dp)
-            .requiredHeight(140.dp),
+            .requiredHeight(140.dp)
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = { onClick(drinkCard.id) }
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NetworkImage(
@@ -39,21 +46,15 @@ fun DrinkCard(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .shadow(8.dp)
-                .clickable {
-                    onClick(drinkCard.id)
-                },
+                .shadow(8.dp),
             url = drinkCard.thumbnail
         )
         Text(
             modifier = Modifier
-                .paddingFromBaseline(top = 24.dp, bottom = 8.dp)
-                .clickable {
-                    onClick(drinkCard.id)
-                },
+                .paddingFromBaseline(top = 24.dp, bottom = 8.dp),
             text = drinkCard.drinkName,
             style = MaterialTheme.typography.caption,
-            color = Color.DarkGray,
+            color = MaterialTheme.colors.onSurface.copy(alpha = .6f),
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis

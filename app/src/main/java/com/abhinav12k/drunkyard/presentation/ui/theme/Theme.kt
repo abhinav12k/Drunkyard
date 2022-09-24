@@ -6,47 +6,47 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-//Todo: edit theme of the application -- make it look awesome!
-private val DarkColorPalette = darkColors(
-    background = background,
-    onBackground = background800,
-    primary = purple200,
-    primaryVariant = purple500,
-    secondary = purple500,
+private val LightColors = lightColors(
+    primary = Red700,
+    primaryVariant = Red900,
     onPrimary = Color.White,
-    onSecondary = Color.White
+    secondary = Red700,
+    secondaryVariant = Red900,
+    onSecondary = Color.White,
+    error = Red800,
+    background = WhiteLight
 )
 
-private val LightColorPalette = lightColors(
-    background = Color.White,
-    onBackground = Color.White,
-    surface = Color.White,
-    primary = purple200,
-    primaryVariant = purple500,
-    secondary = purple500,
-    onPrimary = Color.White,
-    onSecondary = Color.White
+private val DarkColors = darkColors(
+    primary = Red300,
+    primaryVariant = Red700,
+    onPrimary = Color.Black,
+    secondary = Red300,
+    onSecondary = Color.Black,
+    error = Red200,
+    background = BlackLight
 )
 
 @Composable
 fun DrunkyardTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
 
-    val typography = if (darkTheme) {
-        DarkTypography
+    val systemUiController = rememberSystemUiController()
+    if (darkTheme) {
+        systemUiController.setSystemBarsColor(
+            color = DarkColors.background
+        )
     } else {
-        LightTypography
+        systemUiController.setSystemBarsColor(
+            color = LightColors.background
+        )
     }
 
     MaterialTheme(
-        colors = colors,
-        typography = typography,
-        shapes = Shapes,
+        colors = if (darkTheme) DarkColors else LightColors,
+        typography = DrunkyardTypography,
+        shapes = DrunkyardShapes,
         content = content
     )
 }

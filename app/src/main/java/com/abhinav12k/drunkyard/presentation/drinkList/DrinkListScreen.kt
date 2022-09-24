@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +26,7 @@ import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkSection
 import com.abhinav12k.drunkyard.presentation.drinkList.components.HorizontalChipList
 import com.abhinav12k.drunkyard.presentation.drinkList.components.SearchBar
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
+import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 
 @Composable
 fun DrinkListScreen(
@@ -34,51 +36,63 @@ fun DrinkListScreen(
     val viewState = remember {
         viewModel.drinkListViewState
     }
+    val searchDrinkCards = rememberSaveable {
+        viewModel.searchDrinkCards
+    }
+    val drinkSections = rememberSaveable {
+        viewModel.drinkSections
+    }
     val (text, changeText) = rememberSaveable {
         mutableStateOf("")
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        DrinkListScreenContent(
-            categories = null,
-            drinkCards = viewModel.searchDrinkCards.value,
-            drinkSections = viewModel.drinkSections.value,
-            searchText = text,
-            onSearchTextChanged = {
-                if (it.isNotEmpty()) {
-                    viewModel.getDrinksBasedOnName(it)
-                    viewModel.removeDrinkSections()
-                } else {
-                    viewModel.addDrinkSections()
-                    viewModel.removeSearchSection()
+
+    Scaffold { paddingValues ->
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            DrinkListScreenContent(
+                categories = null,
+                drinkCards = searchDrinkCards.value,
+                drinkSections = drinkSections.value,
+                searchText = text,
+                onSearchTextChanged = {
+                    if (it.isNotEmpty()) {
+                        viewModel.getDrinksBasedOnName(it)
+                        viewModel.removeDrinkSections()
+                    } else {
+                        viewModel.addDrinkSections()
+                        viewModel.removeSearchSection()
+                    }
+                    changeText(it)
+                },
+                onChipClicked = {
+                    viewModel.updateChipSelection(it)
+                    viewModel.getDrinkCardsByCategory(it.queryParam)
+                },
+                onDrinkCardClicked = {
+                    onDrinkCardClicked(it)
                 }
-                changeText(it)
-            },
-            onChipClicked = {
-                viewModel.updateChipSelection(it)
-                viewModel.getDrinkCardsByCategory(it.queryParam)
-            },
-            onDrinkCardClicked = {
-                onDrinkCardClicked(it)
+            )
+            if (viewState.value.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
-        )
-        if (viewState.value.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        if (!viewState.value.error.isNullOrBlank()) {
-            Text(
-                text = viewState.value.error!!,
-                color = MaterialTheme.colors.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp)
-                    .align(Alignment.Center)
-            )
+            if (!viewState.value.error.isNullOrBlank()) {
+                Text(
+                    text = viewState.value.error!!,
+                    color = MaterialTheme.colors.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
-
 }
 
 @Composable
