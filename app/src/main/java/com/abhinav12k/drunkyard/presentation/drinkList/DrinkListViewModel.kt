@@ -13,15 +13,15 @@ import com.abhinav12k.drunkyard.domain.usecase.getDrinkByName.GetDrinksByNameUse
 import com.abhinav12k.drunkyard.domain.usecase.getDrinksByCategory.GetDrinkCardsByCategoryUseCase
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DrinkListViewModel @Inject constructor(
     private val getDrinksByNameUseCase: GetDrinksByNameUseCase,
     private val getDrinkCategoriesUseCase: GetDrinkCategoriesUseCase,
-    private val getDrinkCardsByCategoryUseCase: GetDrinkCardsByCategoryUseCase
+    private val getDrinkCardsByCategoryUseCase: GetDrinkCardsByCategoryUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _drinkListViewState: MutableState<DrinkListViewState> = mutableStateOf(
@@ -48,16 +48,18 @@ class DrinkListViewModel @Inject constructor(
         _drinkSections.value = null
     }
 
-    fun removeSearchSection() {
+    fun removeSearchedDrinkCards() {
         _searchDrinkCards.value = null
     }
 
-    fun addDrinkSections() {
-        if(localDrinkSections == null) {
+    fun showDrinkSections() {
+        getDrinksByNameJob?.cancel()
+        if (localDrinkSections == null) {
             getDrinkCategoriesInit()
             return
         }
         _drinkSections.value = localDrinkSections
+        _drinkListViewState.value = DrinkListViewState(isLoading = false)
     }
 
     private fun saveDrinkSectionsResponse(drinkSections: List<DrinkSection>) {
@@ -83,7 +85,7 @@ class DrinkListViewModel @Inject constructor(
         }
     }
 
-    fun getDrinkCategoriesInit() {
+    private fun getDrinkCategoriesInit() {
         viewModelScope.launch {
             getDrinkCategoriesSuspend()
         }
@@ -91,10 +93,12 @@ class DrinkListViewModel @Inject constructor(
 
     private suspend fun getDrinkCategoriesSuspend() {
         getDrinkCategoriesUseCase.invoke().collect() { result ->
-            when(result) {
+            when (result) {
                 is Resource.Success -> getDrinksByCategories(result.data)
-                is Resource.Error -> _drinkListViewState.value = DrinkListViewState(error = result.message)
-                is Resource.Loading -> _drinkListViewState.value = DrinkListViewState(isLoading = true)
+                is Resource.Error -> _drinkListViewState.value =
+                    DrinkListViewState(error = result.message)
+                is Resource.Loading -> _drinkListViewState.value =
+                    DrinkListViewState(isLoading = true)
             }
         }
     }
@@ -152,8 +156,11 @@ class DrinkListViewModel @Inject constructor(
         }
     }
 
+    private var getDrinksByNameJob: Job? = null
+
     fun getDrinksBasedOnName(drinkName: String) {
-        viewModelScope.launch {
+        getDrinksByNameJob?.cancel("Another search request made by user!")
+        getDrinksByNameJob = viewModelScope.launch(dispatcher) {
             getDrinksByNameUseCase.invoke(drinkName).collect() { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -169,6 +176,7 @@ class DrinkListViewModel @Inject constructor(
                 }
             }
         }
+        _drinkListViewState.value = DrinkListViewState(isLoading = true)
     }
 
     fun updateChipSelection(category: Category) {

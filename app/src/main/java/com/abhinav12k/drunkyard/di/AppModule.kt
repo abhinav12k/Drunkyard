@@ -5,12 +5,14 @@ import com.abhinav12k.drunkyard.common.Constants
 import com.abhinav12k.drunkyard.data.remote.CocktailApi
 import com.abhinav12k.drunkyard.data.repository.DrinkRepositoryImpl
 import com.abhinav12k.drunkyard.domain.repository.DrinkRepository
+import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -24,7 +26,14 @@ object AppModule {
     @Singleton
     fun provideCocktailApi(@ApplicationContext appContext: Context): CocktailApi {
         val client = OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor(appContext))
+            .addInterceptor(
+                ChuckerInterceptor.Builder(appContext)
+                    .collector(ChuckerCollector(appContext))
+                    .maxContentLength(250000L)
+                    .redactHeaders(emptySet())
+                    .alwaysReadResponseBody(false)
+                    .build()
+            )
             .build()
         return Retrofit.Builder()
             .client(client)
@@ -39,5 +48,9 @@ object AppModule {
     fun provideDrinkRepository(api: CocktailApi): DrinkRepository {
         return DrinkRepositoryImpl(api)
     }
+
+    @Provides
+    @Singleton
+    fun provideIODispatcher() = Dispatchers.IO
 
 }

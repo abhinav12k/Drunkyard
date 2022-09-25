@@ -12,13 +12,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.R
+import com.abhinav12k.drunkyard.common.BackPressHandler
 import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkCardsGrid
@@ -26,24 +26,35 @@ import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkSection
 import com.abhinav12k.drunkyard.presentation.drinkList.components.HorizontalChipList
 import com.abhinav12k.drunkyard.presentation.drinkList.components.SearchBar
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
-import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 
 @Composable
 fun DrinkListScreen(
     viewModel: DrinkListViewModel,
     onDrinkCardClicked: (drinkId: String) -> Unit
 ) {
-    val viewState = remember {
-        viewModel.drinkListViewState
-    }
     val searchDrinkCards = rememberSaveable {
         viewModel.searchDrinkCards
     }
     val drinkSections = rememberSaveable {
         viewModel.drinkSections
     }
-    val (text, changeText) = rememberSaveable {
+    val (text, changeSearchBarText) = rememberSaveable {
         mutableStateOf("")
+    }
+    val viewState = rememberSaveable(inputs = arrayOf(searchDrinkCards, drinkSections)) {
+        viewModel.drinkListViewState
+    }
+
+    val onBackPressedInCaseUserNavigatedViaSearch = {
+        viewModel.removeSearchedDrinkCards()
+        viewModel.showDrinkSections()
+        changeSearchBarText("")
+    }
+
+    if(!searchDrinkCards.value.isNullOrEmpty()) {
+        BackPressHandler {
+            onBackPressedInCaseUserNavigatedViaSearch.invoke()
+        }
     }
 
     Scaffold { paddingValues ->
@@ -62,10 +73,10 @@ fun DrinkListScreen(
                         viewModel.getDrinksBasedOnName(it)
                         viewModel.removeDrinkSections()
                     } else {
-                        viewModel.addDrinkSections()
-                        viewModel.removeSearchSection()
+                        viewModel.showDrinkSections()
+                        viewModel.removeSearchedDrinkCards()
                     }
-                    changeText(it)
+                    changeSearchBarText(it)
                 },
                 onChipClicked = {
                     viewModel.updateChipSelection(it)
