@@ -54,7 +54,10 @@ fun DrunkyardMainScreen() {
             val drinkId =
                 navBackStackEntry.arguments?.getString(NavScreen.DrinkDetailScreen.argument0)
                     ?: return@composable
-            DrinkDetailScreen(viewModel = hiltViewModel(), drinkId = drinkId)
+            DrinkDetailScreen(
+                viewModel = hiltViewModel(),
+                drinkId = drinkId,
+                onBackPressed = { navController.navigateUp() })
         }
 
     }

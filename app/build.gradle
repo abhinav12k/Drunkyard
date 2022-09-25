@@ -7,6 +7,8 @@ plugins {
     id 'kotlin-parcelize'
 }
 
+def filesAuthorityValue = 'com.abhinav12k.drunkyard' + '.shareprovider'
+
 android {
     compileSdk 32
 
@@ -16,6 +18,9 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
+
+        buildConfigField 'String', 'FILES_AUTHORITY', "\"${filesAuthorityValue}\""
+        manifestPlaceholders = [filesAuthority: filesAuthorityValue]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

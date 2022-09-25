@@ -2,33 +2,42 @@ package com.abhinav12k.drunkyard.presentation.drinkDetail
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.R
-import com.abhinav12k.drunkyard.common.CustomVertical2DRow
-import com.abhinav12k.drunkyard.common.NetworkImage
+import com.abhinav12k.drunkyard.common.*
 import com.abhinav12k.drunkyard.domain.model.DrinkDetail
 import com.abhinav12k.drunkyard.domain.model.Ingredient
+import com.abhinav12k.drunkyard.presentation.ui.theme.TopAppBarDarkBackground
 
 @Composable
 fun DrinkDetailScreen(
     viewModel: DrinkDetailViewModel,
-    drinkId: String
+    drinkId: String,
+    onBackPressed: () -> Unit
 ) {
     LaunchedEffect(key1 = drinkId) {
         viewModel.getDrinkDetailsById(drinkId)
@@ -36,7 +45,29 @@ fun DrinkDetailScreen(
     val viewState = rememberSaveable(inputs = arrayOf(drinkId), key = drinkId) {
         viewModel.drinkDetailViewState
     }
-    Scaffold { paddingValues ->
+
+    val context = LocalContext.current
+    val view = LocalView.current
+
+    val onShareClicked = {
+        view.takeScreenshot(context) {
+            val uri = FileUtil.storeScreenShot(it, context, viewState.value.drinkDetail?.drinkName ?: "Drink")
+            context.openIntentChooser(
+                "Hey there check this drink. It's mind blowing!",
+                contentUri = uri
+            )
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            AppBar(
+                onBackPressed = onBackPressed,
+                onFavoriteClicked = { },
+                onShareClicked = { onShareClicked() }
+            )
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -60,8 +91,7 @@ fun DrinkDetailScreen(
             }
             viewState.value.drinkDetail?.let {
                 DrinkDetailScreenContent(
-                    it,
-                    Modifier.padding(vertical = 8.dp)
+                    it
                 )
             }
         }
@@ -69,9 +99,58 @@ fun DrinkDetailScreen(
 }
 
 @Composable
+private fun AppBar(
+    onBackPressed: () -> Unit,
+    onShareClicked: () -> Unit,
+    onFavoriteClicked: () -> Unit
+) {
+    TopAppBar(
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Rounded.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = { onBackPressed() }
+                    )
+            )
+        },
+        title = {},
+        backgroundColor = if(isSystemInDarkTheme()) TopAppBarDarkBackground else MaterialTheme.colors.background,
+        actions = {
+            Icon(
+                imageVector = Icons.Rounded.Favorite,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = { onFavoriteClicked() }
+                    )
+            )
+            Icon(
+                imageVector = Icons.Rounded.Share,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = { onShareClicked() }
+                    )
+            )
+        }
+    )
+}
+
+@Composable
 fun DrinkDetailScreenContent(
     drinkDetail: DrinkDetail,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier

@@ -6,11 +6,9 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class Drunkyard: Application()
 
-// TODO --- After searching when user press back --- then it exits the app
 //todo - abhinav: 1. After searching show filters for alcoholic/non alcoholic drinks
 // 2. Info message in case of drinks not found
 // 3. Show random drinks -- Surprise me kind of button at home.
-// 4. Share option -- share screenshot of the page and link to the app
 // 5. Add to favorite -- ROOM(local)
 // 6. Helpline number -- how to remove hangover
 // 7. Rating to the drinks
