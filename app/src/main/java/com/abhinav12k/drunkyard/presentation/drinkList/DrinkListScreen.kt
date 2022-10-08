@@ -21,10 +21,7 @@ import com.abhinav12k.drunkyard.R
 import com.abhinav12k.drunkyard.common.BackPressHandler
 import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
-import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkCardsGrid
-import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkSection
-import com.abhinav12k.drunkyard.presentation.drinkList.components.HorizontalChipList
-import com.abhinav12k.drunkyard.presentation.drinkList.components.SearchBar
+import com.abhinav12k.drunkyard.presentation.drinkList.components.*
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 
 @Composable
@@ -44,6 +41,7 @@ fun DrinkListScreen(
     val viewState = rememberSaveable(inputs = arrayOf(searchDrinkCards, drinkSections)) {
         viewModel.drinkListViewState
     }
+    val favoriteDrinks = viewModel.allFavoriteDrinks
 
     val onBackPressedInCaseUserNavigatedViaSearch = {
         viewModel.removeSearchedDrinkCards()
@@ -51,7 +49,7 @@ fun DrinkListScreen(
         changeSearchBarText("")
     }
 
-    if(!searchDrinkCards.value.isNullOrEmpty()) {
+    if (!searchDrinkCards.value.isNullOrEmpty()) {
         BackPressHandler {
             onBackPressedInCaseUserNavigatedViaSearch.invoke()
         }
@@ -67,6 +65,7 @@ fun DrinkListScreen(
                 categories = null,
                 drinkCards = searchDrinkCards.value,
                 drinkSections = drinkSections.value,
+                favoriteDrinks = favoriteDrinks.value,
                 searchText = text,
                 onSearchTextChanged = {
                     if (it.isNotEmpty()) {
@@ -112,6 +111,7 @@ fun DrinkListScreenContent(
     categories: List<Category>?,
     drinkCards: List<DrinkCard>?,
     drinkSections: List<DrinkSection>?,
+    favoriteDrinks: List<DrinkCard>?,
     searchText: String,
     onSearchTextChanged: (drinkName: String) -> Unit,
     onChipClicked: (category: Category) -> Unit,
@@ -132,6 +132,14 @@ fun DrinkListScreenContent(
             )
         }
 
+        if (favoriteDrinks != null) {
+            item {
+                FavoriteDrinkSection(
+                    favoriteDrinks = favoriteDrinks
+                )
+            }
+        }
+
         if (categories != null) {
             item {
                 HorizontalChipList(
@@ -145,7 +153,7 @@ fun DrinkListScreenContent(
         }
 
         if (drinkCards != null) {
-            item(drinkCards) {
+            item {
                 DrinkCardsGrid(
                     drinkCards = drinkCards,
                     modifier = modifier,

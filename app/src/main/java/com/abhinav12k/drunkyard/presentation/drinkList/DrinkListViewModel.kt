@@ -49,6 +49,7 @@ class DrinkListViewModel @Inject constructor(
 
     init {
         getDrinkCategoriesInit()
+        getAllDrinkCardsFromFavorites()
     }
 
     fun removeDrinkSections() {
@@ -199,7 +200,7 @@ class DrinkListViewModel @Inject constructor(
     }
 
     fun getAllDrinkCardsFromFavorites() {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch {
             getAllDrinkCardsFromFavoritesUseCase.invoke().collect() {
                 _allFavoriteDrinks.value = it
             }
