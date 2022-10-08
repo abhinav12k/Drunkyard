@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -29,8 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.R
 import com.abhinav12k.drunkyard.common.*
+import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.domain.model.DrinkDetail
 import com.abhinav12k.drunkyard.domain.model.Ingredient
+import com.abhinav12k.drunkyard.presentation.ui.theme.FavoriteTint
 import com.abhinav12k.drunkyard.presentation.ui.theme.TopAppBarDarkBackground
 
 @Composable
@@ -41,9 +44,14 @@ fun DrinkDetailScreen(
 ) {
     LaunchedEffect(key1 = drinkId) {
         viewModel.getDrinkDetailsById(drinkId)
+        viewModel.isDrinkCardAddedToFavorites(drinkId)
     }
     val viewState = rememberSaveable(inputs = arrayOf(drinkId), key = drinkId) {
         viewModel.drinkDetailViewState
+    }
+
+    val isDrinkAddedAsFavorite = rememberSaveable {
+        viewModel.isDrinkAddedAsFavorite
     }
 
     val context = LocalContext.current
@@ -59,11 +67,20 @@ fun DrinkDetailScreen(
         }
     }
 
+    val onFavoriteClicked = {
+        if(isDrinkAddedAsFavorite.value) {
+            viewModel.removeDrinkCardFromFavorite(drinkId)
+        } else {
+            viewModel.addDrinkCardToFavorites()
+        }
+    }
+
     Scaffold(
         topBar = {
             AppBar(
+                isFavorite = isDrinkAddedAsFavorite.value,
                 onBackPressed = onBackPressed,
-                onFavoriteClicked = { },
+                onFavoriteClicked = { onFavoriteClicked() },
                 onShareClicked = { onShareClicked() }
             )
         }
@@ -100,6 +117,7 @@ fun DrinkDetailScreen(
 
 @Composable
 private fun AppBar(
+    isFavorite: Boolean = false,
     onBackPressed: () -> Unit,
     onShareClicked: () -> Unit,
     onFavoriteClicked: () -> Unit
@@ -123,6 +141,7 @@ private fun AppBar(
         actions = {
             Icon(
                 imageVector = Icons.Rounded.Favorite,
+                tint = if(isFavorite) FavoriteTint else LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(horizontal = 12.dp)

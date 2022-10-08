@@ -10,10 +10,13 @@ import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.domain.usecase.getCategories.GetDrinkCategoriesUseCase
 import com.abhinav12k.drunkyard.domain.usecase.getDrinkByName.GetDrinksByNameUseCase
+import com.abhinav12k.drunkyard.domain.usecase.getDrinkCardsFromFavorite.GetDrinkCardsFromFavorites
 import com.abhinav12k.drunkyard.domain.usecase.getDrinksByCategory.GetDrinkCardsByCategoryUseCase
+import com.abhinav12k.drunkyard.presentation.drinkDetail.DrinkDetailViewState
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +24,7 @@ class DrinkListViewModel @Inject constructor(
     private val getDrinksByNameUseCase: GetDrinksByNameUseCase,
     private val getDrinkCategoriesUseCase: GetDrinkCategoriesUseCase,
     private val getDrinkCardsByCategoryUseCase: GetDrinkCardsByCategoryUseCase,
+    private val getAllDrinkCardsFromFavoritesUseCase: GetDrinkCardsFromFavorites,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
@@ -39,6 +43,9 @@ class DrinkListViewModel @Inject constructor(
     val drinkSections: State<List<DrinkSection>?> get() = _drinkSections
 
     private var localDrinkSections: List<DrinkSection>? = null
+
+    private val _allFavoriteDrinks: MutableState<List<DrinkCard>> = mutableStateOf(listOf())
+    val allFavoriteDrinks: State<List<DrinkCard>> get() = _allFavoriteDrinks
 
     init {
         getDrinkCategoriesInit()
@@ -189,6 +196,14 @@ class DrinkListViewModel @Inject constructor(
             }
         }
         _drinkCardCategories.value = updatedCategories
+    }
+
+    fun getAllDrinkCardsFromFavorites() {
+        viewModelScope.launch(dispatcher) {
+            getAllDrinkCardsFromFavoritesUseCase.invoke().collect() {
+                _allFavoriteDrinks.value = it
+            }
+        }
     }
 
     companion object {

@@ -2,6 +2,8 @@ package com.abhinav12k.drunkyard.di
 
 import android.content.Context
 import com.abhinav12k.drunkyard.common.Constants
+import com.abhinav12k.drunkyard.data.local.DrunkyardDatabase
+import com.abhinav12k.drunkyard.data.local.dao.DrinkCardDao
 import com.abhinav12k.drunkyard.data.remote.CocktailApi
 import com.abhinav12k.drunkyard.data.repository.DrinkRepositoryImpl
 import com.abhinav12k.drunkyard.domain.repository.DrinkRepository
@@ -45,12 +47,23 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDrinkRepository(api: CocktailApi): DrinkRepository {
-        return DrinkRepositoryImpl(api)
+    fun provideDrinkRepository(api: CocktailApi, drinkCardDao: DrinkCardDao): DrinkRepository {
+        return DrinkRepositoryImpl(api, drinkCardDao)
     }
 
     @Provides
     @Singleton
     fun provideIODispatcher() = Dispatchers.IO
 
+    @Provides
+    @Singleton
+    fun provideDrinkCardDao(database: DrunkyardDatabase): DrinkCardDao {
+        return database.drinkCardDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDrunkyardDatabase(@ApplicationContext context: Context): DrunkyardDatabase {
+        return DrunkyardDatabase.getInstance(context)
+    }
 }

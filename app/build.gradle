@@ -98,4 +98,9 @@ dependencies {
 
     implementation "com.github.skydoves:landscapist-coil:1.6.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+
+    //room
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
 }

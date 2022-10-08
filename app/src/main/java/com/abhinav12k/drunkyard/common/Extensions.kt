@@ -58,8 +58,6 @@ fun getScreenShotDeprecated(view: View, callback: (Bitmap) -> Unit, defaultColor
 private fun getScreenShotFromView(
     view: View,
     context: Context,
-    marginTopInDp: Int = 0,
-    marginBottomInDp: Int = 0,
     callback: (Bitmap) -> Unit
 ) {
     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
@@ -87,13 +85,11 @@ private fun getScreenShotFromView(
 
 fun View.takeScreenshot(
     context: Context,
-    marginTop: Int = 0,
-    marginBottom: Int = 0,
     defaultColor: Int = Color.WHITE,
     callback: (Bitmap) -> Unit
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        getScreenShotFromView(this, context, marginTop, marginBottom, callback)
+        getScreenShotFromView(this, context, callback)
     } else {
         getScreenShotDeprecated(this, callback, defaultColor)
     }
