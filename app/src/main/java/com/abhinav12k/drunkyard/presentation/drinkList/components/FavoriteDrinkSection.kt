@@ -1,5 +1,6 @@
 package com.abhinav12k.drunkyard.presentation.drinkList.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +28,8 @@ import com.abhinav12k.drunkyard.presentation.ui.theme.WhiteLight
 fun FavoriteDrinkSection(
     modifier: Modifier = Modifier,
     title: String = "Favorites",
-    favoriteDrinks: List<DrinkCard>
+    favoriteDrinks: List<DrinkCard>,
+    onClick: (drinkId: String) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -56,7 +58,7 @@ fun FavoriteDrinkSection(
             )
             LazyRow {
                 items(favoriteDrinks) { drink ->
-                    DrinkCard(drinkCard = drink)
+                    DrinkCard(drinkCard = drink, onClick = onClick)
                 }
             }
         }

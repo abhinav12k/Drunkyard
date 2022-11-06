@@ -135,7 +135,10 @@ fun DrinkListScreenContent(
         if (favoriteDrinks != null) {
             item {
                 FavoriteDrinkSection(
-                    favoriteDrinks = favoriteDrinks
+                    favoriteDrinks = favoriteDrinks,
+                    onClick = {
+                        onDrinkCardClicked(it)
+                    }
                 )
             }
         }
