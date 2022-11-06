@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.abhinav12k.drunkyard.presentation.drinkDetail.DrinkDetailScreen
 import com.abhinav12k.drunkyard.presentation.drinkList.DrinkListScreen
+import com.abhinav12k.drunkyard.presentation.favoriteScreen.FavoriteDrinksScreen
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,9 +41,11 @@ fun DrunkyardMainScreen() {
     NavHost(navController = navController, startDestination = NavScreen.DrinkListScreen.route) {
 
         composable(route = NavScreen.DrinkListScreen.route) {
-            DrinkListScreen(viewModel = hiltViewModel()) { drinkId ->
+            DrinkListScreen(viewModel = hiltViewModel(), onDrinkCardClicked = { drinkId ->
                 navController.navigate("${NavScreen.DrinkDetailScreen.route}/$drinkId")
-            }
+            }, onViewAllClicked = {
+                navController.navigate(NavScreen.FavoriteDrinksScreen.route)
+            })
         }
 
         composable(
@@ -60,6 +63,13 @@ fun DrunkyardMainScreen() {
                 onBackPressed = { navController.navigateUp() })
         }
 
+        composable(
+            route = NavScreen.FavoriteDrinksScreen.route
+        ) {
+            FavoriteDrinksScreen(viewModel = hiltViewModel()) { drinkId ->
+                navController.navigate("${NavScreen.DrinkDetailScreen.route}/$drinkId")
+            }
+        }
     }
 
 }
@@ -70,4 +80,5 @@ sealed class NavScreen(val route: String) {
         const val routeWithArgument: String = "DrinkDetailScreen/{drinkId}"
         const val argument0: String = "drinkId"
     }
+    object FavoriteDrinksScreen : NavScreen("FavoriteDrinksScreen")
 }

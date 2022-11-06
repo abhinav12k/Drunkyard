@@ -1,6 +1,9 @@
 package com.abhinav12k.drunkyard.common
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -59,4 +62,10 @@ fun Modifier.clearFocusOnKeyboardDismiss(): Modifier = composed {
             }
         }
     }
+}
+
+fun LazyGridScope.header(
+    content: @Composable LazyGridItemScope.() -> Unit
+) {
+    item(span = { GridItemSpan(this.maxLineSpan) }, content = content)
 }

@@ -27,7 +27,8 @@ import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 @Composable
 fun DrinkListScreen(
     viewModel: DrinkListViewModel,
-    onDrinkCardClicked: (drinkId: String) -> Unit
+    onDrinkCardClicked: (drinkId: String) -> Unit,
+    onViewAllClicked: () -> Unit
 ) {
     val searchDrinkCards = rememberSaveable {
         viewModel.searchDrinkCards
@@ -83,7 +84,8 @@ fun DrinkListScreen(
                 },
                 onDrinkCardClicked = {
                     onDrinkCardClicked(it)
-                }
+                },
+                onViewAllClicked = onViewAllClicked
             )
             if (viewState.value.isLoading) {
                 CircularProgressIndicator(
@@ -115,7 +117,8 @@ fun DrinkListScreenContent(
     searchText: String,
     onSearchTextChanged: (drinkName: String) -> Unit,
     onChipClicked: (category: Category) -> Unit,
-    onDrinkCardClicked: (drinkId: String) -> Unit
+    onDrinkCardClicked: (drinkId: String) -> Unit,
+    onViewAllClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -138,7 +141,8 @@ fun DrinkListScreenContent(
                     favoriteDrinks = favoriteDrinks,
                     onClick = {
                         onDrinkCardClicked(it)
-                    }
+                    },
+                    onViewAllClicked = onViewAllClicked
                 )
             }
         }
