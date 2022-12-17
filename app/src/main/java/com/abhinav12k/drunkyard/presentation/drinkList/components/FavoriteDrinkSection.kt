@@ -62,19 +62,19 @@ fun FavoriteDrinkSection(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 8.dp),
-                    color = WhiteLight,
+                    color = if (isSystemInDarkTheme()) WhiteLight else BlackLight,
                     style = TextStyle(
                         shadow = Shadow(
                             color = if (isSystemInDarkTheme()) Color.White else Red800,
-                            offset = Offset(5.0f, 8.0f),
-                            blurRadius = 3f
+//                            offset = Offset(5.0f, 8.0f),
+//                            blurRadius = 3f
                         )
                     )
                 )
                 Text(
                     text = "View All",
-                    color = BlackLight,
-                    style = MaterialTheme.typography.overline,
+                    color = if (isSystemInDarkTheme()) WhiteLight else BlackLight,
+                    style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 8.dp)
                         .clickable { onViewAllClicked.invoke() }
