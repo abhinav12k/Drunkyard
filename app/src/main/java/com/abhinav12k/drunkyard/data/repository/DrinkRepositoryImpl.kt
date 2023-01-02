@@ -3,6 +3,7 @@ package com.abhinav12k.drunkyard.data.repository
 import com.abhinav12k.drunkyard.data.local.dao.DrinkCardDao
 import com.abhinav12k.drunkyard.data.remote.CocktailApi
 import com.abhinav12k.drunkyard.data.remote.dto.DrinksDto
+import com.abhinav12k.drunkyard.data.remote.dto.IngredientsDto
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.domain.repository.DrinkRepository
 import kotlinx.coroutines.flow.Flow
@@ -47,5 +48,9 @@ class DrinkRepositoryImpl @Inject constructor(
 
     override suspend fun isDrinkCardAddedToFavorites(id: String): Boolean {
         return drinkCardDao.isDrinkCardAddedToFavorite(id) != null
+    }
+
+    override suspend fun getIngredientDetailsByName(ingredientName: String): IngredientsDto {
+        return api.getIngredientDetailsByName(ingredientName)
     }
 }

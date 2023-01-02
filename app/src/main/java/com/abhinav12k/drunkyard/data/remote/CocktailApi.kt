@@ -1,8 +1,8 @@
 package com.abhinav12k.drunkyard.data.remote
 
 import com.abhinav12k.drunkyard.data.remote.dto.DrinksDto
+import com.abhinav12k.drunkyard.data.remote.dto.IngredientsDto
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -31,4 +31,7 @@ interface CocktailApi {
 
     @GET("api/json/v1/1/random.php")
     suspend fun getRandomDrink(): DrinksDto
+
+    @GET("api/json/v1/1/search.php")
+    suspend fun getIngredientDetailsByName(@Query("i") ingredient: String): IngredientsDto
 }

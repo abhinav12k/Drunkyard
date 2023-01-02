@@ -1,10 +1,12 @@
 package com.abhinav12k.drunkyard.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -24,7 +26,8 @@ fun NetworkImage(
     modifier: Modifier = Modifier,
     circularRevealEnabled: Boolean = false,
     contentScale: ContentScale = ContentScale.Crop,
-    bitmapPalette: BitmapPalette? = null
+    bitmapPalette: BitmapPalette? = null,
+    failureFallback: @Composable (BoxScope.() -> Unit)? = null
 ) {
     CoilImage(
         imageModel = url,
@@ -39,15 +42,17 @@ fun NetworkImage(
             dropOff = 0.65f
         ),
         failure = {
-            Column(
-                modifier = modifier,
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "image request failed.",
-                    style = MaterialTheme.typography.body2
-                )
+            failureFallback?.invoke(this) ?: run {
+                Column(
+                    modifier = modifier,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "image request failed.",
+                        style = MaterialTheme.typography.body2
+                    )
+                }
             }
         },
     )

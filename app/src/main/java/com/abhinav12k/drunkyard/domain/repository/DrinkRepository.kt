@@ -1,6 +1,7 @@
 package com.abhinav12k.drunkyard.domain.repository
 
 import com.abhinav12k.drunkyard.data.remote.dto.DrinksDto
+import com.abhinav12k.drunkyard.data.remote.dto.IngredientsDto
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import kotlinx.coroutines.flow.Flow
 
@@ -23,4 +24,6 @@ interface DrinkRepository {
     fun getAllDrinkCardsFromFavorites(): Flow<List<DrinkCard>>
 
     suspend fun isDrinkCardAddedToFavorites(id: String): Boolean
+
+    suspend fun getIngredientDetailsByName(ingredientName: String): IngredientsDto
 }
