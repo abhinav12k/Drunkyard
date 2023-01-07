@@ -79,7 +79,7 @@ fun FavoriteDrinkSection(
                 )
             }
             CustomVerticalRowWithColumns(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(8.dp),
                 items = reversedList,
                 numOfColumns = 3,
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -87,9 +87,7 @@ fun FavoriteDrinkSection(
             ) { default_modifier, idx ->
                 DrinkCard(
                     drinkCard = reversedList[idx],
-                    modifier = default_modifier.padding(
-                        start = if (reversedList.size == 1 || idx != 0 && idx % 3 == 0) 8.dp else 0.dp
-                    ),
+                    modifier = default_modifier.fillMaxSize().weight(1f),
                     onClick = onClick
                 )
             }
