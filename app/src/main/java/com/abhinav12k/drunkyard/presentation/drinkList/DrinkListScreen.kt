@@ -12,6 +12,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,34 +24,31 @@ import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.drinkList.components.*
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
+import com.abhinav12k.drunkyard.presentation.favoriteScreen.FavoriteDrinksViewModel
 
 @Composable
 fun DrinkListScreen(
     viewModel: DrinkListViewModel,
+    favoriteDrinksViewModel: FavoriteDrinksViewModel,
     onDrinkCardClicked: (drinkId: String) -> Unit,
     onViewAllClicked: () -> Unit
 ) {
-    val searchDrinkCards = rememberSaveable {
-        viewModel.searchDrinkCards
-    }
-    val drinkSections = rememberSaveable {
-        viewModel.drinkSections
-    }
     val (text, changeSearchBarText) = rememberSaveable {
         mutableStateOf("")
     }
-    val viewState = rememberSaveable(inputs = arrayOf(searchDrinkCards, drinkSections)) {
+    val viewState = rememberSaveable {
         viewModel.drinkListViewState
     }
-    val favoriteDrinks = viewModel.allFavoriteDrinks
+    val favoriteDrinks = rememberSaveable {
+        favoriteDrinksViewModel.favoriteDrinks
+    }
 
     val onBackPressedInCaseUserNavigatedViaSearch = {
-        viewModel.removeSearchedDrinkCards()
         viewModel.showDrinkSections()
         changeSearchBarText("")
     }
 
-    if (!searchDrinkCards.value.isNullOrEmpty()) {
+    if (!viewState.value.searchDrinkCards.isNullOrEmpty()) {
         BackPressHandler {
             onBackPressedInCaseUserNavigatedViaSearch.invoke()
         }
@@ -64,17 +62,17 @@ fun DrinkListScreen(
         ) {
             DrinkListScreenContent(
                 categories = null,
-                drinkCards = searchDrinkCards.value,
-                drinkSections = drinkSections.value,
+                searchDrinkCards = viewState.value.searchDrinkCards,
+                drinkSections = viewState.value.drinkSections,
                 favoriteDrinks = favoriteDrinks.value,
                 searchText = text,
                 onSearchTextChanged = {
                     if (it.isNotEmpty()) {
+                        favoriteDrinksViewModel.hideFavoriteSection()
                         viewModel.getDrinksBasedOnName(it)
-                        viewModel.removeDrinkSections()
                     } else {
                         viewModel.showDrinkSections()
-                        viewModel.removeSearchedDrinkCards()
+                        favoriteDrinksViewModel.showFavoritesSection()
                     }
                     changeSearchBarText(it)
                 },
@@ -111,7 +109,7 @@ fun DrinkListScreen(
 fun DrinkListScreenContent(
     modifier: Modifier = Modifier,
     categories: List<Category>?,
-    drinkCards: List<DrinkCard>?,
+    searchDrinkCards: List<DrinkCard>?,
     drinkSections: List<DrinkSection>?,
     favoriteDrinks: List<DrinkCard>?,
     searchText: String,
@@ -135,7 +133,7 @@ fun DrinkListScreenContent(
             )
         }
 
-        if (favoriteDrinks != null) {
+        if (!favoriteDrinks.isNullOrEmpty()) {
             item {
                 FavoriteDrinkSection(
                     favoriteDrinks = favoriteDrinks,
@@ -159,10 +157,10 @@ fun DrinkListScreenContent(
             }
         }
 
-        if (drinkCards != null) {
+        if (searchDrinkCards != null) {
             item {
                 DrinkCardsGrid(
-                    drinkCards = drinkCards,
+                    drinkCards = searchDrinkCards,
                     modifier = modifier,
                     onClick = {
                         onDrinkCardClicked(it)

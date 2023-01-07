@@ -1,6 +1,9 @@
 package com.abhinav12k.drunkyard.presentation.favoriteScreen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -13,15 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.common.header
-import com.abhinav12k.drunkyard.presentation.drinkList.DrinkListViewModel
 import com.abhinav12k.drunkyard.presentation.drinkList.components.DrinkCard
 
 @Composable
 fun FavoriteDrinksScreen(
-    viewModel: DrinkListViewModel,
+    viewModel: FavoriteDrinksViewModel,
     onDrinkCardClicked: (drinkId: String) -> Unit
 ) {
-    val favoriteDrinks = viewModel.allFavoriteDrinks
+    val favoriteDrinks = viewModel.favoriteDrinks
 
     Scaffold { paddingValues ->
         Box(
@@ -29,7 +31,7 @@ fun FavoriteDrinksScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            if (favoriteDrinks.value.isNotEmpty()) {
+            if (!favoriteDrinks.value.isNullOrEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3)
                 ) {
@@ -42,8 +44,10 @@ fun FavoriteDrinksScreen(
                             color = MaterialTheme.colors.onSurface
                         )
                     }
-                    items(favoriteDrinks.value) { drink ->
-                        DrinkCard(drinkCard = drink, onClick = onDrinkCardClicked)
+                    favoriteDrinks.value?.let {
+                        items(it) { drink ->
+                            DrinkCard(drinkCard = drink, onClick = onDrinkCardClicked)
+                        }
                     }
                 }
             } else {
@@ -53,7 +57,7 @@ fun FavoriteDrinksScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = 20.dp, vertical = 20.dp)
                         .align(Alignment.Center)
                 )
             }

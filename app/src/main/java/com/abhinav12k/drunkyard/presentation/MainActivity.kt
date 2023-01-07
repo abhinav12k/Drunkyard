@@ -35,11 +35,15 @@ fun DrunkyardMainScreen() {
     NavHost(navController = navController, startDestination = NavScreen.DrinkListScreen.route) {
 
         composable(route = NavScreen.DrinkListScreen.route) {
-            DrinkListScreen(viewModel = hiltViewModel(), onDrinkCardClicked = { drinkId ->
-                navController.navigate("${NavScreen.DrinkDetailScreen.route}/$drinkId")
-            }, onViewAllClicked = {
-                navController.navigate(NavScreen.FavoriteDrinksScreen.route)
-            })
+            DrinkListScreen(
+                viewModel = hiltViewModel(),
+                favoriteDrinksViewModel = hiltViewModel(),
+                onDrinkCardClicked = { drinkId ->
+                    navController.navigate("${NavScreen.DrinkDetailScreen.route}/$drinkId")
+                },
+                onViewAllClicked = {
+                    navController.navigate(NavScreen.FavoriteDrinksScreen.route)
+                })
         }
 
         composable(

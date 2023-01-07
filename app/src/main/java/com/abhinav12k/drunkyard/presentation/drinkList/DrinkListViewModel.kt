@@ -10,13 +10,10 @@ import com.abhinav12k.drunkyard.domain.model.Category
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.domain.usecase.getCategories.GetDrinkCategoriesUseCase
 import com.abhinav12k.drunkyard.domain.usecase.getDrinkByName.GetDrinksByNameUseCase
-import com.abhinav12k.drunkyard.domain.usecase.getDrinkCardsFromFavorite.GetDrinkCardsFromFavorites
 import com.abhinav12k.drunkyard.domain.usecase.getDrinksByCategory.GetDrinkCardsByCategoryUseCase
-import com.abhinav12k.drunkyard.presentation.drinkDetail.DrinkDetailViewState
 import com.abhinav12k.drunkyard.presentation.drinkList.model.DrinkSection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +21,6 @@ class DrinkListViewModel @Inject constructor(
     private val getDrinksByNameUseCase: GetDrinksByNameUseCase,
     private val getDrinkCategoriesUseCase: GetDrinkCategoriesUseCase,
     private val getDrinkCardsByCategoryUseCase: GetDrinkCardsByCategoryUseCase,
-    private val getAllDrinkCardsFromFavoritesUseCase: GetDrinkCardsFromFavorites,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
@@ -33,41 +29,22 @@ class DrinkListViewModel @Inject constructor(
     )
     val drinkListViewState: State<DrinkListViewState> get() = _drinkListViewState
 
-    private val _searchDrinkCards: MutableState<List<DrinkCard>?> = mutableStateOf(listOf())
-    val searchDrinkCards: State<List<DrinkCard>?> get() = _searchDrinkCards
-
-    private val _drinkCardCategories: MutableState<List<Category>?> = mutableStateOf(listOf())
-    val drinkCardCategories: State<List<Category>?> get() = _drinkCardCategories
-
-    private val _drinkSections: MutableState<List<DrinkSection>?> = mutableStateOf(listOf())
-    val drinkSections: State<List<DrinkSection>?> get() = _drinkSections
-
     private var localDrinkSections: List<DrinkSection>? = null
-
-    private val _allFavoriteDrinks: MutableState<List<DrinkCard>> = mutableStateOf(listOf())
-    val allFavoriteDrinks: State<List<DrinkCard>> get() = _allFavoriteDrinks
+    private var getDrinksByNameJob: Job? = null
 
     init {
-        getDrinkCategoriesInit()
-        getAllDrinkCardsFromFavorites()
-    }
-
-    fun removeDrinkSections() {
-        _drinkSections.value = null
-    }
-
-    fun removeSearchedDrinkCards() {
-        _searchDrinkCards.value = null
+        getDrinkSections()
     }
 
     fun showDrinkSections() {
         getDrinksByNameJob?.cancel()
         if (localDrinkSections == null) {
-            getDrinkCategoriesInit()
-            return
+            viewModelScope.launch {
+                getDrinkSections()
+            }
+        } else {
+            _drinkListViewState.value = DrinkListViewState(drinkSections = localDrinkSections)
         }
-        _drinkSections.value = localDrinkSections
-        _drinkListViewState.value = DrinkListViewState(isLoading = false)
     }
 
     private fun saveDrinkSectionsResponse(drinkSections: List<DrinkSection>) {
@@ -79,8 +56,7 @@ class DrinkListViewModel @Inject constructor(
             getDrinkCategoriesUseCase.invoke().collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _drinkListViewState.value = DrinkListViewState(isLoading = false)
-                        _drinkCardCategories.value = result.data
+                        _drinkListViewState.value = DrinkListViewState(categories = result.data)
                     }
                     is Resource.Error -> {
                         _drinkListViewState.value = DrinkListViewState(error = result.message)
@@ -93,13 +69,7 @@ class DrinkListViewModel @Inject constructor(
         }
     }
 
-    private fun getDrinkCategoriesInit() {
-        viewModelScope.launch {
-            getDrinkCategoriesSuspend()
-        }
-    }
-
-    private suspend fun getDrinkCategoriesSuspend() {
+    private fun getDrinkSections() = viewModelScope.launch {
         getDrinkCategoriesUseCase.invoke().collect() { result ->
             when (result) {
                 is Resource.Success -> getDrinksByCategories(result.data)
@@ -126,8 +96,7 @@ class DrinkListViewModel @Inject constructor(
             }
         }
         saveDrinkSectionsResponse(drinkSections)
-        _drinkSections.value = drinkSections
-        _drinkListViewState.value = DrinkListViewState(isLoading = false)
+        _drinkListViewState.value = DrinkListViewState(drinkSections = drinkSections)
     }
 
     private suspend fun getDrinkCardsByCategorySuspend(category: String): List<DrinkCard>? =
@@ -150,8 +119,8 @@ class DrinkListViewModel @Inject constructor(
                 .collect() { result ->
                     when (result) {
                         is Resource.Success -> {
-                            _drinkListViewState.value = DrinkListViewState(isLoading = false)
-                            _searchDrinkCards.value = result.data
+                            _drinkListViewState.value =
+                                DrinkListViewState(searchDrinkCards = result.data)
                         }
                         is Resource.Error -> {
                             _drinkListViewState.value = DrinkListViewState(error = result.message)
@@ -164,7 +133,6 @@ class DrinkListViewModel @Inject constructor(
         }
     }
 
-    private var getDrinksByNameJob: Job? = null
 
     fun getDrinksBasedOnName(drinkName: String) {
         getDrinksByNameJob?.cancel("Another search request made by user!")
@@ -172,8 +140,8 @@ class DrinkListViewModel @Inject constructor(
             getDrinksByNameUseCase.invoke(drinkName).collect() { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _drinkListViewState.value = DrinkListViewState(isLoading = false)
-                        _searchDrinkCards.value = result.data
+                        _drinkListViewState.value =
+                            DrinkListViewState(searchDrinkCards = result.data)
                     }
                     is Resource.Error -> {
                         _drinkListViewState.value = DrinkListViewState(error = result.message)
@@ -189,22 +157,14 @@ class DrinkListViewModel @Inject constructor(
 
     fun updateChipSelection(category: Category) {
         val updatedCategories = mutableListOf<Category>()
-        drinkCardCategories.value?.forEach {
+        drinkListViewState.value.categories?.forEach {
             if (category.categoryName == it.categoryName) {
                 updatedCategories.add(it.copy(isSelected = true))
             } else {
                 updatedCategories.add(it.copy(isSelected = false))
             }
         }
-        _drinkCardCategories.value = updatedCategories
-    }
-
-    fun getAllDrinkCardsFromFavorites() {
-        viewModelScope.launch {
-            getAllDrinkCardsFromFavoritesUseCase.invoke().collect() {
-                _allFavoriteDrinks.value = it
-            }
-        }
+        _drinkListViewState.value = drinkListViewState.value.copy(categories = updatedCategories)
     }
 
     companion object {

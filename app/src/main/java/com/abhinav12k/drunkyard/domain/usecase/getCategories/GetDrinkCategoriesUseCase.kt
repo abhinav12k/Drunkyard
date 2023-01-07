@@ -3,7 +3,9 @@ package com.abhinav12k.drunkyard.domain.usecase.getCategories
 import com.abhinav12k.drunkyard.common.Resource
 import com.abhinav12k.drunkyard.data.remote.dto.toCategories
 import com.abhinav12k.drunkyard.domain.repository.DrinkRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -21,6 +23,6 @@ class GetDrinkCategoriesUseCase @Inject constructor(
         } catch (e: IOException) {
             emit(Resource.Error(message = "Couldn't reach server. Please check your internet connection"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
 }
