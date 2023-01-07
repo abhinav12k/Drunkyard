@@ -39,7 +39,7 @@ fun DrinkSection(
             )
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp)
             ) {
                 items(drinkSection.list) { card ->
                     DrinkCard(

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import java.lang.Integer.min
 
 @Composable
 fun <T> CustomVertical2DRow(
@@ -36,6 +37,34 @@ fun <T> CustomVertical2DRow(
             )
         }
         index += 2
+    }
+}
+
+@Composable
+fun <T> CustomVerticalRowWithColumns(
+    modifier: Modifier = Modifier,
+    items: List<T>,
+    numOfColumns: Int,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceAround,
+    resetArrangementIfOneItemInRow: Boolean = false,
+    content: @Composable RowScope.(modifier: Modifier, index: Int) -> Unit
+) {
+    var index = 0
+    var updatedArrangement = if(resetArrangementIfOneItemInRow && items.size == 1) Arrangement.Start else horizontalArrangement
+    while (index < items.size) {
+        Row(
+            horizontalArrangement = updatedArrangement,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            for (i in index until min(index + numOfColumns, items.size)) {
+                content(
+                    Modifier,
+                    i
+                )
+            }
+        }
+        index += min(numOfColumns, items.size)
+        if(resetArrangementIfOneItemInRow && items.size % index == 1) updatedArrangement = Arrangement.Start
     }
 }
 

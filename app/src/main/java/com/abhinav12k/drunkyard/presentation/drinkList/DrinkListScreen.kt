@@ -45,6 +45,7 @@ fun DrinkListScreen(
 
     val onBackPressedInCaseUserNavigatedViaSearch = {
         viewModel.showDrinkSections()
+        favoriteDrinksViewModel.showFavoritesSection()
         changeSearchBarText("")
     }
 
@@ -94,11 +95,9 @@ fun DrinkListScreen(
                 Text(
                     text = viewState.value.error!!,
                     color = MaterialTheme.colors.error,
-                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 20.dp)
                         .align(Alignment.Center)
+                        .padding(horizontal = 20.dp)
                 )
             }
         }
@@ -133,7 +132,7 @@ fun DrinkListScreenContent(
             )
         }
 
-        if (!favoriteDrinks.isNullOrEmpty()) {
+        if (!favoriteDrinks.isNullOrEmpty() && searchDrinkCards == null) {
             item {
                 FavoriteDrinkSection(
                     favoriteDrinks = favoriteDrinks,

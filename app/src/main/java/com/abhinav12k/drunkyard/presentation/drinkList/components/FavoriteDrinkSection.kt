@@ -2,33 +2,28 @@ package com.abhinav12k.drunkyard.presentation.drinkList.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.abhinav12k.drunkyard.common.CustomVerticalRowWithColumns
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.ui.theme.BlackLight
 import com.abhinav12k.drunkyard.presentation.ui.theme.Red800
 import com.abhinav12k.drunkyard.presentation.ui.theme.WhiteLight
+import java.lang.Integer.min
 
 @Composable
 fun FavoriteDrinkSection(
@@ -38,6 +33,9 @@ fun FavoriteDrinkSection(
     onClick: (drinkId: String) -> Unit,
     onViewAllClicked: () -> Unit
 ) {
+    val reversedList = remember {
+        favoriteDrinks.reversed().subList(0, min(6, favoriteDrinks.size))
+    }
     Card(
         modifier = Modifier
             .padding(vertical = 8.dp)
@@ -80,20 +78,20 @@ fun FavoriteDrinkSection(
                         .clickable { onViewAllClicked.invoke() }
                 )
             }
-            val reversedList = favoriteDrinks.reversed()
-            Row {
-                reversedList.forEachIndexed { index, _ ->
-                    if (index <= 3)
-                        DrinkCard(drinkCard = reversedList[index], onClick = onClick)
-                }
-            }
-            if (reversedList.size > 3) {
-                Row {
-                    for (i in 3 until 6) {
-                        if (reversedList.size > i)
-                            DrinkCard(drinkCard = reversedList[i], onClick = onClick)
-                    }
-                }
+            CustomVerticalRowWithColumns(
+                modifier = Modifier.padding(12.dp),
+                items = reversedList,
+                numOfColumns = 3,
+                horizontalArrangement = Arrangement.SpaceAround,
+                resetArrangementIfOneItemInRow = true
+            ) { default_modifier, idx ->
+                DrinkCard(
+                    drinkCard = reversedList[idx],
+                    modifier = default_modifier.padding(
+                        start = if (reversedList.size == 1 || idx != 0 && idx % 3 == 0) 8.dp else 0.dp
+                    ),
+                    onClick = onClick
+                )
             }
         }
     }

@@ -321,9 +321,12 @@ fun DrinkIngredientsSection(
                 .fillMaxWidth()
         )
 
-        CustomVertical2DRow(items = ingredients) { default_modifier, idx ->
+        CustomVerticalRowWithColumns(
+            items = ingredients,
+            numOfColumns = 2
+        ) { default_modifier, idx ->
             IngredientCard(
-                default_modifier,
+                default_modifier.fillMaxWidth().weight(1f),
                 ingredientNumber = idx + 1,
                 ingredient = ingredients[idx],
                 onIngredientCardClicked = onIngredientCardClicked

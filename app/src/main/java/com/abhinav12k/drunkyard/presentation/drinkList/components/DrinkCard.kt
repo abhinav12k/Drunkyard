@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abhinav12k.drunkyard.common.CustomVertical2DRow
+import com.abhinav12k.drunkyard.common.CustomVerticalRowWithColumns
 import com.abhinav12k.drunkyard.common.NetworkImage
 import com.abhinav12k.drunkyard.domain.model.DrinkCard
 import com.abhinav12k.drunkyard.presentation.ui.theme.DrunkyardTheme
@@ -66,9 +67,12 @@ fun DrinkCardsGrid(
     modifier: Modifier = Modifier,
     onClick: (id: String) -> Unit
 ) {
-    CustomVertical2DRow(
+    CustomVerticalRowWithColumns(
         modifier = modifier,
-        items = drinkCards
+        items = drinkCards,
+        numOfColumns = 2,
+        horizontalArrangement = Arrangement.SpaceAround,
+        resetArrangementIfOneItemInRow = false
     ) { default_modifier, idx ->
         DrinkCard(
             modifier = default_modifier,
