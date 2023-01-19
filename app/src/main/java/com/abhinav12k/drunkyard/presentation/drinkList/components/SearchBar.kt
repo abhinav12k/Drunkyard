@@ -67,7 +67,7 @@ fun SearchBar(
                 focusManager.clearFocus()
             }),
         trailingIcon = {
-            when { value.isNotEmpty() ->
+            if (value.isNotEmpty()) {
                 Icon(Icons.Default.Clear,
                     contentDescription = "clear text",
                     modifier = Modifier
