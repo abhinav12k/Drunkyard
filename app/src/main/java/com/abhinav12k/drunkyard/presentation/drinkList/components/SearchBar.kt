@@ -79,7 +79,6 @@ fun SearchBar(
         }
     )
     if(value.isEmpty()) {
-        val focusManager = LocalFocusManager.current
         focusManager.clearFocus()
     }
 }
