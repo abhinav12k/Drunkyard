@@ -1,4 +1,4 @@
-# 🍹 Drunkyard
+# 🍹 Drunkyard  
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5b4a438aba2d459dbea2c013b5f76770)](https://www.codacy.com/gh/abhinav12k/Drunkyard/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=abhinav12k/Drunkyard&amp;utm_campaign=Badge_Grade)
 [![GitHub license](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/abhinav12k/Drunkyard/blob/master/Licence)
 
@@ -26,6 +26,9 @@ Have any drink in mind? Just search and get drinks and cocktails from an open, c
 &nbsp;&nbsp;&nbsp;&nbsp;
 <img src="preview/favorite-dark.jpeg" width="270"/>
 </p>
+
+## Featured in
+- [Android Authority](https://www.androidauthority.com/new-android-apps-658839/) - Best Android Apps of January 2023 🏆 
 
 ## 🛠 Built With 
 - [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android development.
