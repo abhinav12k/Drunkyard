@@ -1,6 +1,7 @@
 # 🍹 Drunkyard  
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5b4a438aba2d459dbea2c013b5f76770)](https://www.codacy.com/gh/abhinav12k/Drunkyard/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=abhinav12k/Drunkyard&amp;utm_campaign=Badge_Grade)
 [![GitHub license](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/abhinav12k/Drunkyard/blob/master/Licence)
+[![Hits](https://hits.sh/github.com/abhinav12k/Drunkyard.svg)](https://hits.sh/github.com/abhinav12k/Drunkyard/)
 
 <img src="preview/banner.png"/>
 
